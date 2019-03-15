@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>数字滤波小知识 | 刘佳的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="有很长一段时间一直没能搞懂滤波器是怎么回事，因为之前想到一个算法用到了傅里叶变换，所以把以前一直困扰的问题就一并搞清楚了。学习就是这样子，有了迷惑未必需要死钻牛角，孔子说的，学而时习之，温故而知新真的是相当的智慧了。这个一直困扰的我的问题，我相信很多初学者一定会和我有同样的困惑，于是，我轻描了几句，希望给感兴趣的人一点帮助。在设计滤波器时，总是在时域信号做很复杂的卷积，为什么不在频域里直接对频率进">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数字滤波小知识">
+<meta property="og:url" content="https://liujia1.github.io/2019/03/15/数字滤波小知识/index.html">
+<meta property="og:site_name" content="刘佳的博客">
+<meta property="og:description" content="有很长一段时间一直没能搞懂滤波器是怎么回事，因为之前想到一个算法用到了傅里叶变换，所以把以前一直困扰的问题就一并搞清楚了。学习就是这样子，有了迷惑未必需要死钻牛角，孔子说的，学而时习之，温故而知新真的是相当的智慧了。这个一直困扰的我的问题，我相信很多初学者一定会和我有同样的困惑，于是，我轻描了几句，希望给感兴趣的人一点帮助。在设计滤波器时，总是在时域信号做很复杂的卷积，为什么不在频域里直接对频率进">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-15T12:29:30.269Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数字滤波小知识">
+<meta name="twitter:description" content="有很长一段时间一直没能搞懂滤波器是怎么回事，因为之前想到一个算法用到了傅里叶变换，所以把以前一直困扰的问题就一并搞清楚了。学习就是这样子，有了迷惑未必需要死钻牛角，孔子说的，学而时习之，温故而知新真的是相当的智慧了。这个一直困扰的我的问题，我相信很多初学者一定会和我有同样的困惑，于是，我轻描了几句，希望给感兴趣的人一点帮助。在设计滤波器时，总是在时域信号做很复杂的卷积，为什么不在频域里直接对频率进">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">刘佳的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">分享是一种快乐</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://liujia1.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-数字滤波小知识" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/15/数字滤波小知识/" class="article-date">
+  <time datetime="2019-03-15T12:23:35.000Z" itemprop="datePublished">2019-03-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      数字滤波小知识
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="有很长一段时间一直没能搞懂滤波器是怎么回事，因为之前想到一个算法用到了傅里叶变换，所以把以前一直困扰的问题就一并搞清楚了。学习就是这样子，有了迷惑未必需要死钻牛角，孔子说的，学而时习之，温故而知新真的是相当的智慧了。这个一直困扰的我的问题，我相信很多初学者一定会和我有同样的困惑，于是，我轻描了几句，希望给感兴趣的人一点帮助。在设计滤波器时，总是在时域信号做很复杂的卷积，为什么不在频域里直接对频率进行剪切或者增益呢？为什么不做频率滤波器"><a href="#有很长一段时间一直没能搞懂滤波器是怎么回事，因为之前想到一个算法用到了傅里叶变换，所以把以前一直困扰的问题就一并搞清楚了。学习就是这样子，有了迷惑未必需要死钻牛角，孔子说的，学而时习之，温故而知新真的是相当的智慧了。这个一直困扰的我的问题，我相信很多初学者一定会和我有同样的困惑，于是，我轻描了几句，希望给感兴趣的人一点帮助。在设计滤波器时，总是在时域信号做很复杂的卷积，为什么不在频域里直接对频率进行剪切或者增益呢？为什么不做频率滤波器" class="headerlink" title="有很长一段时间一直没能搞懂滤波器是怎么回事，因为之前想到一个算法用到了傅里叶变换，所以把以前一直困扰的问题就一并搞清楚了。学习就是这样子，有了迷惑未必需要死钻牛角，孔子说的，学而时习之，温故而知新真的是相当的智慧了。这个一直困扰的我的问题，我相信很多初学者一定会和我有同样的困惑，于是，我轻描了几句，希望给感兴趣的人一点帮助。在设计滤波器时，总是在时域信号做很复杂的卷积，为什么不在频域里直接对频率进行剪切或者增益呢？为什么不做频率滤波器"></a><strong>有很长一段时间一直没能搞懂滤波器是怎么回事，因为之前想到一个算法用到了傅里叶变换，所以把以前一直困扰的问题就一并搞清楚了。学习就是这样子，有了迷惑未必需要死钻牛角，孔子说的，学而时习之，温故而知新真的是相当的智慧了。这个一直困扰的我的问题，我相信很多初学者一定会和我有同样的困惑，于是，我轻描了几句，希望给感兴趣的人一点帮助。在设计滤波器时，总是在时域信号做很复杂的卷积，为什么不在频域里直接对频率进行剪切或者增益呢？<a href="/download/为什么不做频率滤波器.pdf" title="为什么不做频率滤波器">为什么不做频率滤波器</a></strong></h1>
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/03/14/卡尔曼滤波入门指南/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">较旧</strong>
+      <div class="article-nav-title">卡尔曼滤波入门指南</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/03/15/数字滤波小知识/">数字滤波小知识</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/14/卡尔曼滤波入门指南/">卡尔曼滤波入门指南</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/25/密码算法入门指南/">密码算法入门指南</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/21/自制简易浏览器首页/">自制简易浏览器首页</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/17/神经网络反向传播算法快速入门指南/">神经网络反向传播通用算法快速入门指南</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 刘佳<br>
+      支持来自 <a href="/" target="_blank">心</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">首页</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
